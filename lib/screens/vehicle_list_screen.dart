@@ -58,53 +58,64 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
     final selectedStatus = ref.watch(statusFilterProvider);
     final selectedStress = ref.watch(stressFilterProvider);
 
-    return Scaffold(
-      appBar: _buildAppBar(context, vehiclesAsync),
-      drawer: AppDrawer(
-        roleBadgeLabel: 'Fleet Supervisor',
-        items: _drawerItems(context),
-      ),
-      body: Column(
-        children: [
-          // ── Search + Filters ──────────────────────
-          _FilterBar(
-            searchController: _searchController,
-            selectedStatus: selectedStatus,
-            selectedStress: selectedStress,
-            onSearchChanged: (val) =>
-                ref.read(searchQueryProvider.notifier).state = val,
-            onSearchCleared: () {
-              _searchController.clear();
-              ref.read(searchQueryProvider.notifier).state = '';
-            },
-            onStatusChanged: (val) =>
-                ref.read(statusFilterProvider.notifier).state = val ?? 'ALL',
-            onStressChanged: (val) =>
-                ref.read(stressFilterProvider.notifier).state = val ?? 'ALL',
-          ),
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          // Reset all filters so Dashboard returns to full vehicle list
+          ref.read(statusFilterProvider.notifier).state = 'ALL';
+          ref.read(stressFilterProvider.notifier).state = 'ALL';
+          ref.read(searchQueryProvider.notifier).state = '';
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(context, vehiclesAsync),
+        drawer: AppDrawer(
+          roleBadgeLabel: 'Fleet Supervisor',
+          items: _drawerItems(context),
+        ),
+        body: Column(
+          children: [
+            // ── Search + Filters ──────────────────────
+            _FilterBar(
+              searchController: _searchController,
+              selectedStatus: selectedStatus,
+              selectedStress: selectedStress,
+              onSearchChanged: (val) =>
+                  ref.read(searchQueryProvider.notifier).state = val,
+              onSearchCleared: () {
+                _searchController.clear();
+                ref.read(searchQueryProvider.notifier).state = '';
+              },
+              onStatusChanged: (val) =>
+                  ref.read(statusFilterProvider.notifier).state = val ?? 'ALL',
+              onStressChanged: (val) =>
+                  ref.read(stressFilterProvider.notifier).state = val ?? 'ALL',
+            ),
 
-          // ── Vehicle List ──────────────────────────
-          Expanded(
-            child: RefreshIndicator(
-              color: AppColors.brandGreen,
-              onRefresh: () => ref.read(vehicleListProvider.notifier).refresh(),
-              child: vehiclesAsync.when(
-                loading: () => const VehicleListShimmer(),
-                error: (e, _) => FleetLoadErrorWidget(
-                  onRetry: () => ref.refresh(vehicleListProvider),
+            // ── Vehicle List ──────────────────────────
+            Expanded(
+              child: RefreshIndicator(
+                color: AppColors.brandGreen,
+                onRefresh: () =>
+                    ref.read(vehicleListProvider.notifier).refresh(),
+                child: vehiclesAsync.when(
+                  loading: () => const VehicleListShimmer(),
+                  error: (e, _) => FleetLoadErrorWidget(
+                    onRetry: () => ref.refresh(vehicleListProvider),
+                  ),
+                  data: (vehicles) {
+                    if (vehicles.isEmpty) {
+                      return NoVehiclesFound(
+                        onClearFilter: _clearAllFilters,
+                      );
+                    }
+                    return _VehicleList(vehicles: vehicles);
+                  },
                 ),
-                data: (vehicles) {
-                  if (vehicles.isEmpty) {
-                    return NoVehiclesFound(
-                      onClearFilter: _clearAllFilters,
-                    );
-                  }
-                  return _VehicleList(vehicles: vehicles);
-                },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -183,15 +194,9 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
           },
         ),
         DrawerItem(
-          icon: Icons.electric_car_outlined,
-          title: 'All Vehicles',
-          isSelected: true,
-          trailing: const DrawerBadge('All'),
-          onTap: () => Navigator.pop(context),
-        ),
-        DrawerItem(
           icon: Icons.check_circle_outline,
           title: 'Healthy',
+          isSelected: widget.initialFilter == 'HEALTHY',
           trailing: const DrawerBadge('Healthy', color: AppColors.success),
           onTap: () {
             Navigator.pop(context);
@@ -201,6 +206,7 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
         DrawerItem(
           icon: Icons.warning_amber_outlined,
           title: 'Needs Attention',
+          isSelected: widget.initialFilter == 'ATTENTION',
           trailing: const DrawerBadge('Attention', color: AppColors.warning),
           onTap: () {
             Navigator.pop(context);
@@ -210,6 +216,7 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
         DrawerItem(
           icon: Icons.error_outline,
           title: 'Critical',
+          isSelected: widget.initialFilter == 'CRITICAL',
           trailing: const DrawerBadge('Critical', color: AppColors.error),
           onTap: () {
             Navigator.pop(context);

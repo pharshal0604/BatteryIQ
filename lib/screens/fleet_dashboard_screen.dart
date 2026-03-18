@@ -117,7 +117,7 @@ class FleetDashboardScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                   child: OutlinedButton.icon(
-                    onPressed: () => context.goToVehicleList(),
+                    onPressed: () => context.pushVehicleList(),
                     icon: const Icon(Icons.electric_car_outlined, size: 18),
                     label: Text(
                       'View All Vehicles',
@@ -202,15 +202,6 @@ class FleetDashboardScreen extends ConsumerWidget {
           title: 'Fleet Dashboard',
           isSelected: true,
           onTap: () => Navigator.pop(context),
-        ),
-        DrawerItem(
-          icon: Icons.electric_car_outlined,
-          title: 'All Vehicles',
-          trailing: const DrawerBadge('All'),
-          onTap: () {
-            Navigator.pop(context);
-            context.pushVehicleList();
-          },
         ),
         DrawerItem(
           icon: Icons.check_circle_outline,
