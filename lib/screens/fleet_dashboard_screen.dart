@@ -12,6 +12,7 @@ import 'package:ev_fleet_app/features/fleet/models/vehicle_item_model.dart';
 import 'package:ev_fleet_app/features/fleet/providers/fleet_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FleetDashboardScreen extends ConsumerWidget {
@@ -19,7 +20,7 @@ class FleetDashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final summaryAsync  = ref.watch(fleetSummaryProvider);
+    final summaryAsync = ref.watch(fleetSummaryProvider);
     final vehiclesAsync = ref.watch(vehicleListProvider);
 
     return Scaffold(
@@ -45,7 +46,7 @@ class FleetDashboardScreen extends ConsumerWidget {
               // ── Fleet Status Banner ──────────────────
               SliverToBoxAdapter(
                 child: _FleetStatusBanner(
-                  status:      summary.fleetStatus,
+                  status: summary.fleetStatus,
                   hasCritical: summary.hasCritical,
                 ),
               ),
@@ -55,12 +56,15 @@ class FleetDashboardScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   child: FleetStatRow(
-                    healthyCount:   summary.healthy,
+                    healthyCount: summary.healthy,
                     attentionCount: summary.attention,
-                    criticalCount:  summary.critical,
-                    onHealthyTap:   () => context.goToVehicleList(filter: 'HEALTHY'),
-                    onAttentionTap: () => context.goToVehicleList(filter: 'ATTENTION'),
-                    onCriticalTap:  () => context.goToVehicleList(filter: 'CRITICAL'),
+                    criticalCount: summary.critical,
+                    onHealthyTap: () =>
+                        context.goToVehicleList(filter: 'HEALTHY'),
+                    onAttentionTap: () =>
+                        context.goToVehicleList(filter: 'ATTENTION'),
+                    onCriticalTap: () =>
+                        context.goToVehicleList(filter: 'CRITICAL'),
                   ),
                 ),
               ),
@@ -68,9 +72,9 @@ class FleetDashboardScreen extends ConsumerWidget {
               // ── Section Header ───────────────────────
               SliverToBoxAdapter(
                 child: _SectionHeader(
-                  title:       'Fleet Overview',
+                  title: 'Fleet Overview',
                   actionLabel: 'View All',
-                  onAction:    () => context.goToVehicleList(),
+                  onAction: () => context.goToVehicleList(),
                 ),
               ),
 
@@ -83,7 +87,7 @@ class FleetDashboardScreen extends ConsumerWidget {
                   child: ErrorRetryWidget(
                     message: e.toString(),
                     onRetry: () => ref.refresh(vehicleListProvider),
-                    size:    ErrorSize.card,
+                    size: ErrorSize.card,
                   ),
                 ),
                 data: (vehicles) {
@@ -114,7 +118,7 @@ class FleetDashboardScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                   child: OutlinedButton.icon(
                     onPressed: () => context.goToVehicleList(),
-                    icon:  const Icon(Icons.electric_car_outlined, size: 18),
+                    icon: const Icon(Icons.electric_car_outlined, size: 18),
                     label: Text(
                       'View All Vehicles',
                       style: GoogleFonts.lato(fontWeight: FontWeight.w600),
@@ -143,7 +147,7 @@ class FleetDashboardScreen extends ConsumerWidget {
   PreferredSizeWidget _buildAppBar(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<dynamic> summaryAsync,   // ✅ typed as AsyncValue<dynamic>
+    AsyncValue<dynamic> summaryAsync, // ✅ typed as AsyncValue<dynamic>
   ) {
     return AppBar(
       title: Column(
@@ -152,7 +156,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           Text(
             'Fleet Health',
             style: GoogleFonts.lato(
-              fontSize:   18,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -168,19 +172,19 @@ class FleetDashboardScreen extends ConsumerWidget {
               ),
             ),
             loading: () => const SizedBox.shrink(),
-            error:   (_, __) => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
           ),
         ],
       ),
       actions: [
         IconButton(
-          icon:    const Icon(Icons.notifications_outlined),
+          icon: const Icon(Icons.notifications_outlined),
           onPressed: () {},
           tooltip: 'Alerts',
         ),
         IconButton(
-          icon:    const Icon(Icons.settings_outlined),
-          onPressed: () {},
+          icon: const Icon(Icons.settings_outlined),
+          onPressed: () => context.pushNamed('settings'),
           tooltip: 'Settings',
         ),
         const SizedBox(width: 4),
@@ -194,14 +198,14 @@ class FleetDashboardScreen extends ConsumerWidget {
 
   List<DrawerItem> _drawerItems(BuildContext context, WidgetRef ref) => [
         DrawerItem(
-          icon:       Icons.dashboard_outlined,
-          title:      'Fleet Dashboard',
+          icon: Icons.dashboard_outlined,
+          title: 'Fleet Dashboard',
           isSelected: true,
-          onTap:      () => Navigator.pop(context),
+          onTap: () => Navigator.pop(context),
         ),
         DrawerItem(
-          icon:     Icons.electric_car_outlined,
-          title:    'All Vehicles',
+          icon: Icons.electric_car_outlined,
+          title: 'All Vehicles',
           trailing: const DrawerBadge('All'),
           onTap: () {
             Navigator.pop(context);
@@ -245,19 +249,19 @@ class FleetDashboardScreen extends ConsumerWidget {
           },
         ),
         DrawerItem(
-          icon:            Icons.notifications_outlined,
-          title:           'Alerts',
+          icon: Icons.notifications_outlined,
+          title: 'Alerts',
           isDividerBefore: true,
-          onTap:           () => Navigator.pop(context),
+          onTap: () => Navigator.pop(context),
         ),
         DrawerItem(
-          icon:  Icons.settings_outlined,
+          icon: Icons.settings_outlined,
           title: 'Settings',
           onTap: () => Navigator.pop(context),
         ),
         DrawerItem(
-          icon:            Icons.help_outline,
-          title:           'Help & Support',
+          icon: Icons.help_outline,
+          title: 'Help & Support',
           isDividerBefore: true,
           onTap: () {
             Navigator.pop(context);
@@ -265,7 +269,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           },
         ),
         DrawerItem(
-          icon:  Icons.info_outline,
+          icon: Icons.info_outline,
           title: 'About',
           onTap: () {
             Navigator.pop(context);
@@ -291,17 +295,16 @@ class _FleetStatusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = hasCritical ? AppColors.error : AppColors.success;
-    final icon  = hasCritical
-        ? Icons.warning_amber_rounded
-        : Icons.check_circle_rounded;
+    final icon =
+        hasCritical ? Icons.warning_amber_rounded : Icons.check_circle_rounded;
 
     return Container(
-      margin:  const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color:        color.withValues(alpha: 0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border:       Border.all(color: color.withValues(alpha: 0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
@@ -311,9 +314,9 @@ class _FleetStatusBanner extends StatelessWidget {
             child: Text(
               status,
               style: GoogleFonts.lato(
-                fontSize:   13,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color:      color,
+                color: color,
               ),
             ),
           ),
@@ -348,9 +351,9 @@ class _SectionHeader extends StatelessWidget {
             child: Text(
               title,
               style: GoogleFonts.lato(
-                fontSize:   16,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color:      Theme.of(context).colorScheme.onSurface,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -359,9 +362,9 @@ class _SectionHeader extends StatelessWidget {
             child: Text(
               actionLabel,
               style: GoogleFonts.lato(
-                fontSize:   13,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color:      AppColors.brandGreen,
+                color: AppColors.brandGreen,
               ),
             ),
           ),
@@ -388,10 +391,10 @@ class _VehicleTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Material(
-        color:        Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
-          onTap:        onTap,
+          onTap: onTap,
           borderRadius: BorderRadius.circular(14),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -413,9 +416,9 @@ class _VehicleTile extends StatelessWidget {
                       Text(
                         vehicle.vehicleId,
                         style: GoogleFonts.lato(
-                          fontSize:   15,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color:      Theme.of(context).colorScheme.onSurface,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -434,13 +437,14 @@ class _VehicleTile extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    StressBadge(level: vehicle.stressLevel, size: BadgeSize.small),
+                    StressBadge(
+                        level: vehicle.stressLevel, size: BadgeSize.small),
                     const SizedBox(height: 5),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          width:  7,
+                          width: 7,
                           height: 7,
                           decoration: BoxDecoration(
                             color: statusColor,
@@ -452,9 +456,9 @@ class _VehicleTile extends StatelessWidget {
                           vehicle.status[0] +
                               vehicle.status.substring(1).toLowerCase(),
                           style: GoogleFonts.lato(
-                            fontSize:   11,
+                            fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color:      statusColor,
+                            color: statusColor,
                           ),
                         ),
                       ],
@@ -466,7 +470,7 @@ class _VehicleTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 Icon(
                   Icons.chevron_right_rounded,
-                  size:  20,
+                  size: 20,
                   color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ],

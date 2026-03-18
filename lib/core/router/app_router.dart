@@ -1,3 +1,4 @@
+import 'package:ev_fleet_app/features/settings/presentation/settings_screen.dart';
 import 'package:ev_fleet_app/screens/fleet_dashboard_screen.dart';
 import 'package:ev_fleet_app/screens/vehicle_detail_screen.dart';
 import 'package:ev_fleet_app/screens/vehicle_list_screen.dart';
@@ -23,8 +24,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 class AppRoutes {
   AppRoutes._();
 
-  static const String dashboard     = '/';
-  static const String vehicleList   = '/vehicles';
+  static const String dashboard = '/';
+  static const String vehicleList = '/vehicles';
   static const String vehicleDetail = '/vehicle/:id';
 
   /// Build vehicle detail path with actual id
@@ -38,8 +39,8 @@ class AppRoutes {
 class AppRouteNames {
   AppRouteNames._();
 
-  static const String dashboard     = 'dashboard';
-  static const String vehicleList   = 'vehicleList';
+  static const String dashboard = 'dashboard';
+  static const String vehicleList = 'vehicleList';
   static const String vehicleDetail = 'vehicleDetail';
 }
 
@@ -48,12 +49,16 @@ class AppRouteNames {
 // ==========================================================================
 
 final List<RouteBase> _routes = [
-
   // ── Fleet Dashboard ───────────────────────────────────
   GoRoute(
-    path:  AppRoutes.dashboard,
-    name:  AppRouteNames.dashboard,
+    path: AppRoutes.dashboard,
+    name: AppRouteNames.dashboard,
     builder: (context, state) => const FleetDashboardScreen(),
+  ),
+  GoRoute(
+    path: '/settings',
+    name: 'settings',
+    builder: (context, state) => const SettingsScreen(),
   ),
 
   // ── Vehicle List ──────────────────────────────────────
@@ -127,7 +132,6 @@ Widget _errorPage(BuildContext context, GoRouterState state) {
 // ==========================================================================
 
 extension AppNavigation on BuildContext {
-
   // ── Go (replace current) ──────────────────────────────
 
   void goToDashboard() => go(AppRoutes.dashboard);
@@ -154,8 +158,7 @@ extension AppNavigation on BuildContext {
   void pushVehicleDetail(String vehicleId) =>
       push(AppRoutes.vehicleDetailPath(vehicleId));
 
-  void pushVehicleList({String filter = 'ALL'}) =>
-      push(
+  void pushVehicleList({String filter = 'ALL'}) => push(
         Uri(
           path: AppRoutes.vehicleList,
           queryParameters: {'filter': filter},

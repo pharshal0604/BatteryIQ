@@ -89,7 +89,6 @@ class _SoHCircleState extends State<SoHCircle>
       builder: (context, _) {
         return SizedBox(
           width: widget.size,
-          height: widget.size + (widget.showStatus ? 24 : 0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
