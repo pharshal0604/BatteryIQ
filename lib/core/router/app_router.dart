@@ -1,6 +1,6 @@
 import 'package:ev_fleet_app/features/alerts/presentation/alerts_screen.dart';
-import 'package:ev_fleet_app/features/settings/presentation/settings_screen.dart';
 import 'package:ev_fleet_app/features/dashboard/presentation/fleet_dashboard_screen.dart';
+import 'package:ev_fleet_app/features/settings/presentation/settings_screen.dart';
 import 'package:ev_fleet_app/features/vehicle_detail/presentation/vehicle_detail_screen.dart';
 import 'package:ev_fleet_app/features/vehicle_list/presentation/vehicle_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +28,8 @@ class AppRoutes {
   static const String dashboard = '/';
   static const String vehicleList = '/vehicles';
   static const String vehicleDetail = '/vehicle/:id';
+  static const String alerts = '/alerts';
+  static const String settings = '/settings';
 
   /// Build vehicle detail path with actual id
   static String vehicleDetailPath(String id) => '/vehicle/$id';
@@ -43,6 +45,8 @@ class AppRouteNames {
   static const String dashboard = 'dashboard';
   static const String vehicleList = 'vehicleList';
   static const String vehicleDetail = 'vehicleDetail';
+  static const String alerts = 'alerts';
+  static const String settings = 'settings';
 }
 
 // ==========================================================================
@@ -56,14 +60,18 @@ final List<RouteBase> _routes = [
     name: AppRouteNames.dashboard,
     builder: (context, state) => const FleetDashboardScreen(),
   ),
+
+  // ── Settings ──────────────────────────────────────────
   GoRoute(
-    path: '/settings',
-    name: 'settings',
+    path: AppRoutes.settings,
+    name: AppRouteNames.settings,
     builder: (context, state) => const SettingsScreen(),
   ),
+
+  // ── Alerts ────────────────────────────────────────────
   GoRoute(
-    path: '/alerts',
-    name: 'alerts',
+    path: AppRoutes.alerts,
+    name: AppRouteNames.alerts,
     builder: (context, state) => const AlertsScreen(),
   ),
 
@@ -155,7 +163,6 @@ extension AppNavigation on BuildContext {
           'search': search,
         },
       );
-  void pushAlerts() => push('/alerts');
 
   void goToVehicleDetail(String vehicleId) =>
       go(AppRoutes.vehicleDetailPath(vehicleId));
@@ -180,4 +187,6 @@ extension AppNavigation on BuildContext {
           },
         ).toString(),
       );
+
+  void pushAlerts() => push(AppRoutes.alerts);
 }

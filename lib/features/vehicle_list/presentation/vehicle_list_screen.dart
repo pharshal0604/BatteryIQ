@@ -1,3 +1,4 @@
+import 'package:ev_fleet_app/core/config/app_constants.dart';
 import 'package:ev_fleet_app/core/router/app_router.dart';
 import 'package:ev_fleet_app/core/theme/app_colors.dart';
 import 'package:ev_fleet_app/core/widgets/app_bar_title.dart';
@@ -43,7 +44,7 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(statusFilterProvider.notifier).state = widget.initialFilter;
       ref.read(stressFilterProvider.notifier).state = widget.initialStress;
-      ref.read(searchQueryProvider.notifier).state = widget.initialSearch;
+      ref.read(searchQueryProvider.notifier).state  = widget.initialSearch;
     });
   }
 
@@ -55,33 +56,35 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final vehiclesAsync = ref.watch(vehicleListProvider);
+    final vehiclesAsync  = ref.watch(vehicleListProvider);
     final selectedStatus = ref.watch(statusFilterProvider);
     final selectedStress = ref.watch(stressFilterProvider);
 
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
+          // Reset all filters after build cycle — avoids Riverpod
+          // "modified during build" error
           Future.microtask(() {
             ref.read(statusFilterProvider.notifier).state = 'ALL';
             ref.read(stressFilterProvider.notifier).state = 'ALL';
-            ref.read(searchQueryProvider.notifier).state = '';
+            ref.read(searchQueryProvider.notifier).state  = '';
           });
         }
       },
       child: Scaffold(
         appBar: _buildAppBar(context, vehiclesAsync),
         drawer: AppDrawer(
-          roleBadgeLabel: 'Fleet Supervisor',
-          items: _drawerItems(context),
+          roleBadgeLabel: AppConstants.roleSupervisor,
+          items:          _drawerItems(context),
         ),
         body: Column(
           children: [
             // ── Search + Filters ──────────────────────
             _FilterBar(
               searchController: _searchController,
-              selectedStatus: selectedStatus,
-              selectedStress: selectedStress,
+              selectedStatus:   selectedStatus,
+              selectedStress:   selectedStress,
               onSearchChanged: (val) =>
                   ref.read(searchQueryProvider.notifier).state = val,
               onSearchCleared: () {
@@ -97,12 +100,12 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
             // ── Vehicle List ──────────────────────────
             Expanded(
               child: RefreshIndicator(
-                color: AppColors.brandGreen,
+                color:     AppColors.brandGreen,
                 onRefresh: () =>
                     ref.read(vehicleListProvider.notifier).refresh(),
                 child: vehiclesAsync.when(
                   loading: () => const VehicleListShimmer(),
-                  error: (e, _) => FleetLoadErrorWidget(
+                  error:   (e, _) => FleetLoadErrorWidget(
                     onRetry: () => ref.refresh(vehicleListProvider),
                   ),
                   data: (vehicles) {
@@ -132,25 +135,25 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
   ) {
     final count = vehiclesAsync.value?.length ?? 0;
 
+    // Reads live filter so title updates when drawer filter changes
     final activeFilter = ref.watch(statusFilterProvider);
     final title = switch (activeFilter) {
-      'HEALTHY' => 'Healthy Vehicles',
+      'HEALTHY'   => 'Healthy Vehicles',
       'ATTENTION' => 'Needs Attention',
-      'CRITICAL' => 'Critical Vehicles',
-      _ => 'All Vehicles',
+      'CRITICAL'  => 'Critical Vehicles',
+      _           => 'All Vehicles',
     };
 
     return AppBar(
       title: AppBarTitle(
-        title: title,
+        title:    title,
         subtitle: count > 0 ? '$count vehicles' : null,
       ),
       actions: [
-        // Clear filters button — only shown when filter is active
         if (_hasActiveFilters())
           TextButton.icon(
             onPressed: _clearAllFilters,
-            icon: const Icon(Icons.filter_alt_off_rounded, size: 16),
+            icon:  const Icon(Icons.filter_alt_off_rounded, size: 16),
             label: Text(
               'Clear',
               style: GoogleFonts.lato(fontWeight: FontWeight.w600),
@@ -170,31 +173,31 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
 
   List<DrawerItem> _drawerItems(BuildContext context) => [
         DrawerItem(
-          icon: Icons.dashboard_outlined,
-          title: 'Fleet Dashboard',
+          icon:  Icons.dashboard_outlined,
+          title: AppConstants.drawerDashboard,
           onTap: () => context.goToDashboard(),
         ),
         DrawerItem(
-          icon: Icons.check_circle_outline,
-          title: 'Healthy',
+          icon:      Icons.check_circle_outline,
+          title:     AppConstants.drawerHealthy,
           isSelected: widget.initialFilter == 'HEALTHY',
-          trailing: const DrawerBadge('Healthy', color: AppColors.success),
+          trailing:  const DrawerBadge('Healthy', color: AppColors.success),
           onTap: () =>
               ref.read(statusFilterProvider.notifier).state = 'HEALTHY',
         ),
         DrawerItem(
-          icon: Icons.warning_amber_outlined,
-          title: 'Needs Attention',
+          icon:      Icons.warning_amber_outlined,
+          title:     AppConstants.drawerAttention,
           isSelected: widget.initialFilter == 'ATTENTION',
-          trailing: const DrawerBadge('Attention', color: AppColors.warning),
+          trailing:  const DrawerBadge('Attention', color: AppColors.warning),
           onTap: () =>
               ref.read(statusFilterProvider.notifier).state = 'ATTENTION',
         ),
         DrawerItem(
-          icon: Icons.error_outline,
-          title: 'Critical',
+          icon:      Icons.error_outline,
+          title:     AppConstants.drawerCritical,
           isSelected: widget.initialFilter == 'CRITICAL',
-          trailing: const DrawerBadge('Critical', color: AppColors.error),
+          trailing:  const DrawerBadge('Critical', color: AppColors.error),
           onTap: () =>
               ref.read(statusFilterProvider.notifier).state = 'CRITICAL',
         ),
@@ -215,7 +218,7 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
   void _clearAllFilters() {
     ref.read(statusFilterProvider.notifier).state = 'ALL';
     ref.read(stressFilterProvider.notifier).state = 'ALL';
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(searchQueryProvider.notifier).state  = '';
     _searchController.clear();
   }
 }
@@ -248,7 +251,7 @@ class _FilterBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color:  Theme.of(context).colorScheme.surface,
         border: Border(
           bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
@@ -258,27 +261,24 @@ class _FilterBar extends StatelessWidget {
           // ── Search Field ──────────────────────────
           VehicleSearchField(
             controller: searchController,
-            onChanged: onSearchChanged,
-            onClear: onSearchCleared,
+            onChanged:  onSearchChanged,
+            onClear:    onSearchCleared,
           ),
           const SizedBox(height: 10),
 
           // ── Dropdowns Row ─────────────────────────
           Row(
             children: [
-              // Status filter
               Expanded(
                 child: VehicleStatusDropdown(
-                  value: selectedStatus,
+                  value:      selectedStatus,
                   onSelected: onStatusChanged,
                 ),
               ),
               const SizedBox(width: 10),
-
-              // Stress filter
               Expanded(
                 child: StressLevelDropdown(
-                  value: selectedStress,
+                  value:      selectedStress,
                   onSelected: onStressChanged,
                 ),
               ),
@@ -291,7 +291,7 @@ class _FilterBar extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════
-// VEHICLE LIST — scrollable list of tiles
+// VEHICLE LIST
 // ═══════════════════════════════════════════════
 
 class _VehicleList extends StatelessWidget {
@@ -302,18 +302,18 @@ class _VehicleList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: vehicles.length,
+      padding:     const EdgeInsets.symmetric(vertical: 8),
+      itemCount:   vehicles.length,
       itemBuilder: (context, index) => _VehicleListTile(
         vehicle: vehicles[index],
-        onTap: () => context.pushVehicleDetail(vehicles[index].vehicleId),
+        onTap:   () => context.pushVehicleDetail(vehicles[index].vehicleId),
       ),
     );
   }
 }
 
 // ═══════════════════════════════════════════════
-// VEHICLE LIST TILE — full detail tile
+// VEHICLE LIST TILE
 // ═══════════════════════════════════════════════
 
 class _VehicleListTile extends StatelessWidget {
@@ -329,10 +329,10 @@ class _VehicleListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: Material(
-        color: Theme.of(context).colorScheme.surface,
+        color:        Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
-          onTap: onTap,
+          onTap:        onTap,
           borderRadius: BorderRadius.circular(14),
           child: Container(
             padding: const EdgeInsets.all(14),
@@ -359,7 +359,7 @@ class _VehicleListTile extends StatelessWidget {
                           Text(
                             vehicle.vehicleId,
                             style: GoogleFonts.lato(
-                              fontSize: 15,
+                              fontSize:   15,
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -367,7 +367,7 @@ class _VehicleListTile extends StatelessWidget {
                           const SizedBox(width: 8),
                           StressBadge(
                             level: vehicle.stressLevel,
-                            size: BadgeSize.small,
+                            size:  BadgeSize.small,
                           ),
                         ],
                       ),
@@ -379,17 +379,19 @@ class _VehicleListTile extends StatelessWidget {
                           Text(
                             vehicle.sohDisplay,
                             style: GoogleFonts.lato(
-                              fontSize: 12,
+                              fontSize:   12,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.fromSoH(vehicle.soh),
+                              color:      AppColors.fromSoH(vehicle.soh),
                             ),
                           ),
                           Text(
                             '  ·  ${vehicle.rulDisplay}',
                             style: GoogleFonts.lato(
                               fontSize: 12,
-                              color:
-                                  Theme.of(context).textTheme.bodySmall?.color,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.color,
                             ),
                           ),
                         ],
@@ -399,11 +401,10 @@ class _VehicleListTile extends StatelessWidget {
                       // Row 3: Status chip + last updated
                       Row(
                         children: [
-                          // Status chip
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
-                              vertical: 3,
+                              vertical:   3,
                             ),
                             decoration: BoxDecoration(
                               color: statusColor.withValues(alpha: 0.1),
@@ -416,7 +417,7 @@ class _VehicleListTile extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Container(
-                                  width: 6,
+                                  width:  6,
                                   height: 6,
                                   decoration: BoxDecoration(
                                     color: statusColor,
@@ -426,19 +427,19 @@ class _VehicleListTile extends StatelessWidget {
                                 const SizedBox(width: 5),
                                 Text(
                                   vehicle.status[0] +
-                                      vehicle.status.substring(1).toLowerCase(),
+                                      vehicle.status
+                                          .substring(1)
+                                          .toLowerCase(),
                                   style: GoogleFonts.lato(
-                                    fontSize: 11,
+                                    fontSize:   11,
                                     fontWeight: FontWeight.w600,
-                                    color: statusColor,
+                                    color:      statusColor,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(width: 8),
-
-                          // Last updated
                           if (vehicle.lastUpdatedTime.isNotEmpty)
                             Text(
                               'Updated ${vehicle.lastUpdatedTime}',
@@ -460,7 +461,7 @@ class _VehicleListTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 Icon(
                   Icons.chevron_right_rounded,
-                  size: 20,
+                  size:  20,
                   color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ],

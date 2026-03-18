@@ -1,3 +1,4 @@
+import 'package:ev_fleet_app/core/config/env.dart';
 import 'package:ev_fleet_app/core/network/api_client.dart';
 import 'package:ev_fleet_app/core/network/api_service.dart';
 import 'package:ev_fleet_app/features/alerts/models/alert_model.dart';
@@ -13,8 +14,6 @@ final alertsRepositoryProvider = Provider<AlertsRepository>((ref) {
 
 // ═══════════════════════════════════════════════
 // ALERTS REPOSITORY
-// Converts raw API maps → typed AlertModel list
-// Throws ApiException on failure — caught in provider
 // ═══════════════════════════════════════════════
 
 class AlertsRepository {
@@ -23,11 +22,9 @@ class AlertsRepository {
   AlertsRepository(this._apiService);
 
   // ==========================================================================
-  // Fleet Alerts
+  // Fleet Alerts — real API
   // ==========================================================================
 
-  /// Fetches all fleet-wide alerts
-  /// [severity] → ALL | WARNING | CRITICAL
   Future<List<AlertModel>> getFleetAlerts({String severity = 'ALL'}) async {
     try {
       final data = await _apiService.getFleetAlerts(
@@ -60,11 +57,9 @@ class AlertsRepository {
       list = list.where((a) => a.severity == severity).toList();
     }
 
-    // Always Critical first, then Warning, newest first within each group
+    // Critical first, then Warning — newest first within each group
     list.sort((a, b) {
-      if (a.severity != b.severity) {
-        return a.isCritical ? -1 : 1;
-      }
+      if (a.severity != b.severity) return a.isCritical ? -1 : 1;
       return b.timestamp.compareTo(a.timestamp);
     });
 

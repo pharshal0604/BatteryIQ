@@ -1,3 +1,4 @@
+import 'package:ev_fleet_app/core/config/app_constants.dart';
 import 'package:ev_fleet_app/core/router/app_router.dart';
 import 'package:ev_fleet_app/core/theme/app_colors.dart';
 import 'package:ev_fleet_app/core/widgets/app_bar_title.dart';
@@ -25,7 +26,7 @@ class FleetDashboardScreen extends ConsumerWidget {
     return Scaffold(
       appBar: _buildAppBar(context, ref, summaryAsync),
       drawer: AppDrawer(
-        roleBadgeLabel: 'Fleet Supervisor',
+        roleBadgeLabel: AppConstants.roleSupervisor,
         items: _drawerItems(context, ref),
       ),
       body: RefreshIndicator(
@@ -146,7 +147,7 @@ class FleetDashboardScreen extends ConsumerWidget {
   PreferredSizeWidget _buildAppBar(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<dynamic> summaryAsync, // ✅ typed as AsyncValue<dynamic>
+    AsyncValue<FleetSummaryModel> summaryAsync,
   ) {
     return AppBar(
       title: AppBarTitle(
@@ -161,12 +162,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           onPressed: () => context.pushAlerts(),
           tooltip: 'Alerts',
         ),
-        // IconButton(
-        //   icon: const Icon(Icons.settings_outlined),
-        //   onPressed: () => context.pushNamed('settings'),
-        //   tooltip: 'Settings',
-        // ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 4),
       ],
     );
   }
@@ -178,13 +174,13 @@ class FleetDashboardScreen extends ConsumerWidget {
   List<DrawerItem> _drawerItems(BuildContext context, WidgetRef ref) => [
         DrawerItem(
           icon: Icons.dashboard_outlined,
-          title: 'Fleet Dashboard',
+          title: AppConstants.drawerDashboard,
           isSelected: true,
-          onTap: () {}, // drawer closes itself, nothing else needed
+          onTap: () {},
         ),
         DrawerItem(
           icon: Icons.check_circle_outline,
-          title: 'Healthy',
+          title: AppConstants.drawerHealthy,
           trailing: DrawerBadge(
             '${ref.read(fleetSummaryProvider).value?.healthy ?? 0}',
             color: AppColors.success,
@@ -193,7 +189,7 @@ class FleetDashboardScreen extends ConsumerWidget {
         ),
         DrawerItem(
           icon: Icons.warning_amber_outlined,
-          title: 'Needs Attention',
+          title: AppConstants.drawerAttention,
           trailing: DrawerBadge(
             '${ref.read(fleetSummaryProvider).value?.attention ?? 0}',
             color: AppColors.warning,
@@ -202,7 +198,7 @@ class FleetDashboardScreen extends ConsumerWidget {
         ),
         DrawerItem(
           icon: Icons.error_outline,
-          title: 'Critical',
+          title: AppConstants.drawerCritical,
           trailing: DrawerBadge(
             '${ref.read(fleetSummaryProvider).value?.critical ?? 0}',
             color: AppColors.error,
@@ -366,7 +362,6 @@ class _VehicleTile extends StatelessWidget {
                 ),
 
                 // Chevron
-                const SizedBox(width: 8),
                 Icon(
                   Icons.chevron_right_rounded,
                   size: 20,
