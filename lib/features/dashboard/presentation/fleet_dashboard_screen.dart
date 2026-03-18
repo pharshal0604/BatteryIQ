@@ -1,18 +1,17 @@
 import 'package:ev_fleet_app/core/router/app_router.dart';
 import 'package:ev_fleet_app/core/theme/app_colors.dart';
+import 'package:ev_fleet_app/core/widgets/app_bar_title.dart';
 import 'package:ev_fleet_app/core/widgets/app_drawer.dart';
 import 'package:ev_fleet_app/core/widgets/empty_state_widget.dart';
 import 'package:ev_fleet_app/core/widgets/error_retry_widget.dart';
 import 'package:ev_fleet_app/core/widgets/loading_shimmer.dart';
 import 'package:ev_fleet_app/core/widgets/soh_circle.dart';
 import 'package:ev_fleet_app/core/widgets/stat_card.dart';
-import 'package:ev_fleet_app/core/widgets/stress_badge.dart';
 import 'package:ev_fleet_app/features/fleet/models/fleet_summary_model.dart';
 import 'package:ev_fleet_app/features/fleet/models/vehicle_item_model.dart';
 import 'package:ev_fleet_app/features/fleet/providers/fleet_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FleetDashboardScreen extends ConsumerWidget {
@@ -150,31 +149,11 @@ class FleetDashboardScreen extends ConsumerWidget {
     AsyncValue<dynamic> summaryAsync, // ✅ typed as AsyncValue<dynamic>
   ) {
     return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Fleet Health',
-            style: GoogleFonts.lato(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          summaryAsync.when(
-            data: (s) => Text(
-              '${s.total} vehicles total',
-              style: GoogleFonts.lato(
-                fontSize: 12,
-                color: Theme.of(context)
-                    .appBarTheme
-                    .foregroundColor
-                    ?.withValues(alpha: 0.7),
-              ),
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-        ],
+      title: AppBarTitle(
+        title: 'Fleet Health',
+        subtitle: summaryAsync.value != null
+            ? '${summaryAsync.value!.total} vehicles total'
+            : null,
       ),
       actions: [
         IconButton(
@@ -182,12 +161,12 @@ class FleetDashboardScreen extends ConsumerWidget {
           onPressed: () => context.pushAlerts(),
           tooltip: 'Alerts',
         ),
-        IconButton(
-          icon: const Icon(Icons.settings_outlined),
-          onPressed: () => context.pushNamed('settings'),
-          tooltip: 'Settings',
-        ),
-        const SizedBox(width: 4),
+        // IconButton(
+        //   icon: const Icon(Icons.settings_outlined),
+        //   onPressed: () => context.pushNamed('settings'),
+        //   tooltip: 'Settings',
+        // ),
+        const SizedBox(width: 6),
       ],
     );
   }
@@ -230,28 +209,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           ),
           onTap: () => context.pushVehicleList(filter: 'CRITICAL'),
         ),
-        DrawerItem(
-          icon: Icons.notifications_outlined,
-          title: 'Alerts',
-          isDividerBefore: true,
-          onTap: () => context.pushAlerts(),
-        ),
-        DrawerItem(
-          icon: Icons.settings_outlined,
-          title: 'Settings',
-          onTap: () => context.pushNamed('settings'),
-        ),
-        DrawerItem(
-          icon: Icons.help_outline,
-          title: 'Help & Support',
-          isDividerBefore: true,
-          onTap: () => AppDrawerDialogs.showHelp(context),
-        ),
-        DrawerItem(
-          icon: Icons.info_outline,
-          title: 'About',
-          onTap: () => AppDrawerDialogs.showAbout(context),
-        ),
+        ...AppDrawer.commonItems(context),
       ];
 }
 
@@ -362,8 +320,6 @@ class _VehicleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = AppColors.fromStatus(vehicle.status);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Material(
@@ -407,39 +363,6 @@ class _VehicleTile extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-
-                // Right Side
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    StressBadge(
-                        level: vehicle.stressLevel, size: BadgeSize.small),
-                    const SizedBox(height: 5),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 7,
-                          height: 7,
-                          decoration: BoxDecoration(
-                            color: statusColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          vehicle.status[0] +
-                              vehicle.status.substring(1).toLowerCase(),
-                          style: GoogleFonts.lato(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: statusColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
 
                 // Chevron

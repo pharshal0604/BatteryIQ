@@ -1,12 +1,7 @@
+import 'package:ev_fleet_app/core/config/env.dart';
 import 'package:ev_fleet_app/features/alerts/models/alert_model.dart';
 import 'package:ev_fleet_app/features/alerts/repository/alerts_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// ═══════════════════════════════════════════════
-// TOGGLE — set true when backend not ready
-// ═══════════════════════════════════════════════
-
-const bool _useMock = true;
 
 // ═══════════════════════════════════════════════
 // SEVERITY FILTER PROVIDER
@@ -33,7 +28,7 @@ class AlertsNotifier extends AsyncNotifier<List<AlertModel>> {
 
   Future<List<AlertModel>> _fetch({required String severity}) async {
     final repo = ref.read(alertsRepositoryProvider);
-    return _useMock
+    return EnvConfig.useMock
         ? repo.getFleetAlertsMock(severity: severity)
         : repo.getFleetAlerts(severity: severity);
   }

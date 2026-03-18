@@ -1,7 +1,7 @@
 import 'package:ev_fleet_app/features/alerts/presentation/alerts_screen.dart';
 import 'package:ev_fleet_app/features/settings/presentation/settings_screen.dart';
 import 'package:ev_fleet_app/features/dashboard/presentation/fleet_dashboard_screen.dart';
-import 'package:ev_fleet_app/screens/vehicle_detail_screen.dart';
+import 'package:ev_fleet_app/features/vehicle_detail/presentation/vehicle_detail_screen.dart';
 import 'package:ev_fleet_app/features/vehicle_list/presentation/vehicle_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

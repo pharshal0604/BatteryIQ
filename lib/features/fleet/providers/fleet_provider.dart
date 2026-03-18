@@ -6,12 +6,6 @@ import 'package:ev_fleet_app/features/fleet/repository/fleet_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ═══════════════════════════════════════════════
-// TOGGLE — set true when backend not ready
-// ═══════════════════════════════════════════════
-
-const bool _useMock = true;
-
-// ═══════════════════════════════════════════════
 // FILTER PROVIDERS — shared across screens
 // ═══════════════════════════════════════════════
 
@@ -45,7 +39,7 @@ class FleetSummaryNotifier extends AsyncNotifier<FleetSummaryModel> {
 
   Future<FleetSummaryModel> _fetch() async {
     final repo = ref.read(fleetRepositoryProvider);
-    return _useMock
+    return EnvConfig.useMock
         ? repo.getFleetSummaryMock()
         : repo.getFleetSummary();
   }
@@ -96,7 +90,7 @@ class VehicleListNotifier extends AsyncNotifier<List<VehicleItemModel>> {
     required String search,
   }) async {
     final repo = ref.read(fleetRepositoryProvider);
-    return _useMock
+    return EnvConfig.useMock
         ? repo.getVehicleListMock(
             status: status,
             stress: stress,

@@ -22,8 +22,7 @@ class EnvConfig {
       dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080/api';
 
   /// API version prefix
-  static String get apiVersion =>
-      dotenv.env['API_VERSION'] ?? 'v1';
+  static String get apiVersion => dotenv.env['API_VERSION'] ?? 'v1';
 
   /// Full API URL with version
   static String get fullApiUrl => '$apiBaseUrl/$apiVersion';
@@ -41,20 +40,18 @@ class EnvConfig {
   // ==========================================================================
 
   /// App display name
-  static String get appName =>
-      dotenv.env['APP_NAME'] ?? 'EV Fleet Health';
+  static String get appName => dotenv.env['APP_NAME'] ?? 'EV Fleet Health';
 
   /// App version string
-  static String get appVersion =>
-      dotenv.env['APP_VERSION'] ?? '1.0.0';
+  static String get appVersion => dotenv.env['APP_VERSION'] ?? '1.0.0';
 
   /// App environment: development / staging / production
   static String get appEnvironment =>
       dotenv.env['APP_ENVIRONMENT'] ?? 'development';
 
-  static bool get isProduction  => appEnvironment == 'production';
+  static bool get isProduction => appEnvironment == 'production';
   static bool get isDevelopment => appEnvironment == 'development';
-  static bool get isStaging     => appEnvironment == 'staging';
+  static bool get isStaging => appEnvironment == 'staging';
 
   /// Support contact
   static String get supportEmail =>
@@ -95,6 +92,8 @@ class EnvConfig {
   /// Show driving stress section on vehicle detail
   static bool get isDrivingStressEnabled =>
       _parseBool(dotenv.env['FEATURE_DRIVING_STRESS'] ?? 'true');
+  
+  static bool get useMock => _parseBool(dotenv.env['USE_MOCK'] ?? 'true');
 
   // ==========================================================================
   // Debug & Logging
@@ -105,8 +104,7 @@ class EnvConfig {
       _parseBool(dotenv.env['DEBUG_MODE'] ?? 'false');
 
   /// Log level: INFO / DEBUG / ERROR
-  static String get logLevel =>
-      dotenv.env['LOG_LEVEL'] ?? 'INFO';
+  static String get logLevel => dotenv.env['LOG_LEVEL'] ?? 'INFO';
 
   /// Enable Dio network request/response logging
   static bool get isNetworkLogsEnabled =>
@@ -147,6 +145,8 @@ class EnvConfig {
     print('  - Regen Stats       : $isRegenStatsEnabled');
     print('  - Local Alerts      : $isLocalAlertsEnabled');
     print('  - Driving Stress    : $isDrivingStressEnabled');
+    print('=' * 60);
+    print('Mock Mode     : $useMock');
     print('=' * 60);
   }
 }

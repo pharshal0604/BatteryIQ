@@ -1,5 +1,6 @@
 import 'package:ev_fleet_app/core/router/app_router.dart';
 import 'package:ev_fleet_app/core/theme/app_colors.dart';
+import 'package:ev_fleet_app/core/widgets/app_bar_title.dart';
 import 'package:ev_fleet_app/core/widgets/app_drawer.dart';
 import 'package:ev_fleet_app/core/widgets/app_dropdown.dart';
 import 'package:ev_fleet_app/core/widgets/app_input_decoration.dart';
@@ -12,7 +13,6 @@ import 'package:ev_fleet_app/features/fleet/models/vehicle_item_model.dart';
 import 'package:ev_fleet_app/features/fleet/providers/fleet_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class VehicleListScreen extends ConsumerStatefulWidget {
@@ -141,28 +141,9 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
     };
 
     return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.lato(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if (count > 0)
-            Text(
-              '$count vehicles',
-              style: GoogleFonts.lato(
-                fontSize: 12,
-                color: Theme.of(context)
-                    .appBarTheme
-                    .foregroundColor
-                    ?.withValues(alpha: 0.7),
-              ),
-            ),
-        ],
+      title: AppBarTitle(
+        title: title,
+        subtitle: count > 0 ? '$count vehicles' : null,
       ),
       actions: [
         // Clear filters button — only shown when filter is active
@@ -217,28 +198,7 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
           onTap: () =>
               ref.read(statusFilterProvider.notifier).state = 'CRITICAL',
         ),
-        DrawerItem(
-          icon: Icons.notifications_outlined,
-          title: 'Alerts',
-          isDividerBefore: true,
-          onTap: () => context.pushAlerts(),
-        ),
-        DrawerItem(
-          icon: Icons.settings_outlined,
-          title: 'Settings',
-          onTap: () => context.pushNamed('settings'),
-        ),
-        DrawerItem(
-          icon: Icons.help_outline,
-          title: 'Help & Support',
-          isDividerBefore: true,
-          onTap: () => AppDrawerDialogs.showHelp(context),
-        ),
-        DrawerItem(
-          icon: Icons.info_outline,
-          title: 'About',
-          onTap: () => AppDrawerDialogs.showAbout(context),
-        ),
+        ...AppDrawer.commonItems(context),
       ];
 
   // ==========================================================================

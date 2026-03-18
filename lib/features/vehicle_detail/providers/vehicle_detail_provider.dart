@@ -1,3 +1,4 @@
+import 'package:ev_fleet_app/core/config/env.dart';
 import 'package:ev_fleet_app/features/vehicle_detail/models/regen_data_model.dart';
 import 'package:ev_fleet_app/features/vehicle_detail/models/stress_insight_model.dart';
 import 'package:ev_fleet_app/features/vehicle_detail/models/vehicle_detail_model.dart';
@@ -7,8 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ═══════════════════════════════════════════════
 // TOGGLE — set true when backend not ready
 // ═══════════════════════════════════════════════
-
-const bool _useMock = true;
 
 // ═══════════════════════════════════════════════
 // TREND RANGE PROVIDER
@@ -37,7 +36,7 @@ class VehicleDetailNotifier
 
   Future<VehicleDetailModel> _fetch(String vehicleId) async {
     final repo = ref.read(vehicleDetailRepositoryProvider);
-    return _useMock
+    return EnvConfig.useMock 
         ? repo.getVehicleDetailMock(vehicleId)
         : repo.getVehicleDetail(vehicleId);
   }
@@ -70,7 +69,7 @@ class VehicleTrendNotifier
   Future<List<SoHTrendPoint>> _fetch(
       String vehicleId, String range) async {
     final repo = ref.read(vehicleDetailRepositoryProvider);
-    return _useMock
+    return EnvConfig.useMock 
         ? repo.getVehicleTrendMock(vehicleId, range: range)
         : repo.getVehicleTrend(vehicleId, range: range);
   }
@@ -90,7 +89,7 @@ class VehicleStressNotifier
   @override
   Future<List<StressInsightModel>> build(String arg) async {
     final repo = ref.read(vehicleDetailRepositoryProvider);
-    return _useMock
+    return EnvConfig.useMock 
         ? repo.getVehicleStressMock(arg)
         : repo.getVehicleStress(arg);
   }
@@ -110,7 +109,7 @@ class VehicleRegenNotifier
   @override
   Future<RegenDataModel> build(String arg) async {
     final repo = ref.read(vehicleDetailRepositoryProvider);
-    return _useMock
+    return EnvConfig.useMock 
         ? repo.getVehicleRegenMock(arg)
         : repo.getVehicleRegen(arg);
   }

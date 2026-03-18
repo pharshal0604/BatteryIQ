@@ -1,4 +1,5 @@
 import 'package:ev_fleet_app/core/theme/app_colors.dart';
+import 'package:ev_fleet_app/core/widgets/app_bar_title.dart';
 import 'package:ev_fleet_app/core/widgets/empty_state_widget.dart';
 import 'package:ev_fleet_app/core/widgets/error_retry_widget.dart';
 import 'package:ev_fleet_app/core/widgets/loading_shimmer.dart';
@@ -86,28 +87,12 @@ class VehicleDetailScreen extends ConsumerWidget {
     AsyncValue<VehicleDetailModel> detailAsync,
   ) {
     return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            vehicleId,
-            style: GoogleFonts.lato(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          detailAsync.when(
-            data: (d) => Text(
-              d.statusLabel,
-              style: GoogleFonts.lato(
-                fontSize: 12,
-                color: AppColors.fromStatus(d.status),
-              ),
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-        ],
+      title: AppBarTitle(
+        title: vehicleId,
+        subtitle: detailAsync.value?.statusLabel,
+        subtitleColor: detailAsync.value != null
+            ? AppColors.fromStatus(detailAsync.value!.status)
+            : null,
       ),
     );
   }

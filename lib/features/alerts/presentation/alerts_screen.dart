@@ -1,5 +1,6 @@
 import 'package:ev_fleet_app/core/router/app_router.dart';
 import 'package:ev_fleet_app/core/theme/app_colors.dart';
+import 'package:ev_fleet_app/core/widgets/app_bar_title.dart';
 import 'package:ev_fleet_app/core/widgets/empty_state_widget.dart';
 import 'package:ev_fleet_app/core/widgets/error_retry_widget.dart';
 import 'package:ev_fleet_app/features/alerts/models/alert_model.dart';
@@ -14,7 +15,7 @@ class AlertsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final alertsAsync = ref.watch(alertsProvider);
-    final severity    = ref.watch(alertSeverityFilterProvider);
+    final severity = ref.watch(alertSeverityFilterProvider);
 
     return Scaffold(
       appBar: _buildAppBar(context, ref, alertsAsync),
@@ -26,7 +27,7 @@ class AlertsScreen extends ConsumerWidget {
           // ── Alert List ────────────────────────────
           Expanded(
             child: RefreshIndicator(
-              color:     AppColors.brandGreen,
+              color: AppColors.brandGreen,
               onRefresh: () => ref.read(alertsProvider.notifier).refresh(),
               child: alertsAsync.when(
                 loading: () => const _AlertsShimmer(),
@@ -58,31 +59,11 @@ class AlertsScreen extends ConsumerWidget {
     final criticalCount = ref.watch(criticalAlertCountProvider);
 
     return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Alerts',
-            style: GoogleFonts.lato(
-              fontSize:   18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          alertsAsync.when(
-            data: (list) => Text(
-              '${list.length} active alert${list.length == 1 ? '' : 's'}',
-              style: GoogleFonts.lato(
-                fontSize: 12,
-                color: Theme.of(context)
-                    .appBarTheme
-                    .foregroundColor
-                    ?.withValues(alpha: 0.7),
-              ),
-            ),
-            loading: () => const SizedBox.shrink(),
-            error:   (_, __) => const SizedBox.shrink(),
-          ),
-        ],
+      title: AppBarTitle(
+        title: 'Alerts',
+        subtitle: alertsAsync.value != null
+            ? '${alertsAsync.value!.length} active alert${alertsAsync.value!.length == 1 ? '' : 's'}'
+            : null,
       ),
       actions: [
         if (criticalCount > 0)
@@ -90,17 +71,18 @@ class AlertsScreen extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 16),
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color:        AppColors.error,
+                  color: AppColors.error,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '$criticalCount Critical',
                   style: GoogleFonts.lato(
-                    fontSize:   12,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color:      Colors.white,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -125,7 +107,7 @@ class _SeverityFilterBar extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color:  Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         border: Border(
           bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
@@ -133,26 +115,26 @@ class _SeverityFilterBar extends ConsumerWidget {
       child: Row(
         children: [
           _SeverityChip(
-            label:      'All',
-            value:      'ALL',
-            selected:   selected,
-            color:      AppColors.brandGreen,
+            label: 'All',
+            value: 'ALL',
+            selected: selected,
+            color: AppColors.brandGreen,
           ),
           const SizedBox(width: 8),
           _SeverityChip(
-            label:    'Warning',
-            value:    'WARNING',
+            label: 'Warning',
+            value: 'WARNING',
             selected: selected,
-            color:    AppColors.warning,
-            icon:     Icons.warning_amber_rounded,
+            color: AppColors.warning,
+            icon: Icons.warning_amber_rounded,
           ),
           const SizedBox(width: 8),
           _SeverityChip(
-            label:    'Critical',
-            value:    'CRITICAL',
+            label: 'Critical',
+            value: 'CRITICAL',
             selected: selected,
-            color:    AppColors.error,
-            icon:     Icons.bolt_rounded,
+            color: AppColors.error,
+            icon: Icons.bolt_rounded,
           ),
         ],
       ),
@@ -180,15 +162,14 @@ class _SeverityChip extends ConsumerWidget {
     final isSelected = selected == value;
 
     return GestureDetector(
-      onTap: () =>
-          ref.read(alertSeverityFilterProvider.notifier).state = value,
+      onTap: () => ref.read(alertSeverityFilterProvider.notifier).state = value,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding:  const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color:        isSelected ? color : color.withValues(alpha: 0.08),
+          color: isSelected ? color : color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border:       Border.all(
+          border: Border.all(
             color: isSelected ? color : color.withValues(alpha: 0.3),
           ),
         ),
@@ -198,7 +179,7 @@ class _SeverityChip extends ConsumerWidget {
             if (icon != null) ...[
               Icon(
                 icon,
-                size:  14,
+                size: 14,
                 color: isSelected ? Colors.white : color,
               ),
               const SizedBox(width: 5),
@@ -206,9 +187,9 @@ class _SeverityChip extends ConsumerWidget {
             Text(
               label,
               style: GoogleFonts.lato(
-                fontSize:   13,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color:      isSelected ? Colors.white : color,
+                color: isSelected ? Colors.white : color,
               ),
             ),
           ],
@@ -230,7 +211,7 @@ class _AlertList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final criticals = alerts.where((a) => a.isCritical).toList();
-    final warnings  = alerts.where((a) => a.isWarning).toList();
+    final warnings = alerts.where((a) => a.isWarning).toList();
 
     return ListView(
       padding: const EdgeInsets.only(top: 8, bottom: 24),
@@ -241,7 +222,7 @@ class _AlertList extends StatelessWidget {
             label: 'Critical',
             count: criticals.length,
             color: AppColors.error,
-            icon:  Icons.bolt_rounded,
+            icon: Icons.bolt_rounded,
           ),
           ...criticals.map((a) => _AlertTile(alert: a)),
         ],
@@ -252,7 +233,7 @@ class _AlertList extends StatelessWidget {
             label: 'Warning',
             count: warnings.length,
             color: AppColors.warning,
-            icon:  Icons.warning_amber_rounded,
+            icon: Icons.warning_amber_rounded,
           ),
           ...warnings.map((a) => _AlertTile(alert: a)),
         ],
@@ -289,24 +270,24 @@ class _GroupHeader extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.lato(
-              fontSize:   13,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
-              color:      color,
+              color: color,
             ),
           ),
           const SizedBox(width: 6),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
             decoration: BoxDecoration(
-              color:        color.withValues(alpha: 0.12),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               '$count',
               style: GoogleFonts.lato(
-                fontSize:   11,
+                fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color:      color,
+                color: color,
               ),
             ),
           ),
@@ -332,10 +313,10 @@ class _AlertTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: Material(
-        color:        Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
-          onTap:        () => context.pushVehicleDetail(alert.vehicleId),
+          onTap: () => context.pushVehicleDetail(alert.vehicleId),
           borderRadius: BorderRadius.circular(14),
           child: Container(
             padding: const EdgeInsets.all(14),
@@ -350,9 +331,9 @@ class _AlertTile extends StatelessWidget {
               children: [
                 // ── Severity Icon ────────────────────
                 Container(
-                  padding:    const EdgeInsets.all(9),
+                  padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
-                    color:        color.withValues(alpha: 0.10),
+                    color: color.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(alert.typeIcon, size: 18, color: color),
@@ -370,7 +351,7 @@ class _AlertTile extends StatelessWidget {
                           Text(
                             alert.vehicleId,
                             style: GoogleFonts.lato(
-                              fontSize:   14,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -389,7 +370,7 @@ class _AlertTile extends StatelessWidget {
                         alert.message,
                         style: GoogleFonts.lato(
                           fontSize: 13,
-                          height:   1.4,
+                          height: 1.4,
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
@@ -411,7 +392,7 @@ class _AlertTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 Icon(
                   Icons.chevron_right_rounded,
-                  size:  20,
+                  size: 20,
                   color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ],
@@ -438,16 +419,16 @@ class _TypeBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color:        color.withValues(alpha: 0.10),
+        color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: color.withValues(alpha: 0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Text(
         label,
         style: GoogleFonts.lato(
-          fontSize:   11,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
-          color:      color,
+          color: color,
         ),
       ),
     );
@@ -464,14 +445,14 @@ class _AlertsShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding:     const EdgeInsets.symmetric(vertical: 12),
-      itemCount:   5,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      itemCount: 5,
       itemBuilder: (context, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         child: Container(
-          height:     88,
+          height: 88,
           decoration: BoxDecoration(
-            color:        Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: Theme.of(context).dividerColor),
           ),

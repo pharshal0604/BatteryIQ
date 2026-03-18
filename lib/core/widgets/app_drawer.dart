@@ -1,5 +1,8 @@
+import 'package:ev_fleet_app/core/config/app_constants.dart';
+import 'package:ev_fleet_app/core/router/app_router.dart';
 import 'package:ev_fleet_app/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ═══════════════════════════════════════════════
@@ -74,13 +77,13 @@ class AppDrawer extends StatelessWidget {
 
   const AppDrawer({
     super.key,
-    this.appName = 'EV Fleet Health',
-    this.appSubtitle = 'Endurance Technologies',
+    this.appName = AppConstants.appName,
+    this.appSubtitle = AppConstants.appSubtitle,
     this.appIcon = Icons.electric_bolt_rounded,
     this.roleBadgeLabel,
     required this.items,
     this.footer,
-    this.versionLabel = 'v1.0.0',
+    this.versionLabel = AppConstants.appVersion,
   });
 
   @override
@@ -109,11 +112,38 @@ class AppDrawer extends StatelessWidget {
               }).toList(),
             ),
           ),
-          footer ?? _DrawerFooter(versionLabel: versionLabel ?? 'v1.0.0'),
+          footer ??
+              _DrawerFooter(
+                  versionLabel: versionLabel ?? AppConstants.appVersion),
         ],
       ),
     );
   }
+
+  static List<DrawerItem> commonItems(BuildContext context) => [
+        DrawerItem(
+          icon: Icons.notifications_outlined,
+          title: AppConstants.drawerAlerts,
+          isDividerBefore: true,
+          onTap: () => context.pushAlerts(),
+        ),
+        DrawerItem(
+          icon: Icons.settings_outlined,
+          title: AppConstants.drawerSettings,
+          onTap: () => context.pushNamed('settings'),
+        ),
+        DrawerItem(
+          icon: Icons.help_outline,
+          title: AppConstants.drawerHelp,
+          isDividerBefore: true,
+          onTap: () => AppDrawerDialogs.showHelp(context),
+        ),
+        DrawerItem(
+          icon: Icons.info_outline,
+          title: AppConstants.drawerAbout,
+          onTap: () => AppDrawerDialogs.showAbout(context),
+        ),
+      ];
 }
 
 // ═══════════════════════════════════════════════
@@ -298,7 +328,7 @@ class _DrawerFooter extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            'EV Fleet Health  •  $versionLabel',
+            '${AppConstants.appName}  •  $versionLabel',
             style: GoogleFonts.lato(
               fontSize: 12,
               color: Theme.of(context).textTheme.bodySmall?.color,
@@ -333,7 +363,7 @@ class AppDrawerDialogs {
             _helpItem(context,
                 icon: Icons.email_outlined,
                 title: 'Email Support',
-                subtitle: 'fleet@endurance.in'),
+                subtitle: AppConstants.supportEmail),
             const SizedBox(height: 12),
             _helpItem(context,
                 icon: Icons.chat_outlined,
@@ -343,7 +373,7 @@ class AppDrawerDialogs {
             _helpItem(context,
                 icon: Icons.book_outlined,
                 title: 'Documentation',
-                subtitle: 'docs.endurance-fleet.in'),
+                subtitle: AppConstants.docsUrl),
           ],
         ),
         actions: [_closeButton(context, ctx)],
@@ -379,7 +409,7 @@ class AppDrawerDialogs {
             ),
             const SizedBox(height: 16),
             Text(
-              'EV Fleet Health',
+              AppConstants.appName,
               style: GoogleFonts.lato(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -388,7 +418,7 @@ class AppDrawerDialogs {
             ),
             const SizedBox(height: 4),
             Text(
-              'Version 1.0.0',
+              'Version ${AppConstants.appVersion}',
               style: GoogleFonts.lato(
                 fontSize: 13,
                 color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -408,7 +438,7 @@ class AppDrawerDialogs {
             const Divider(),
             const SizedBox(height: 8),
             Text(
-              '© 2026 Endurance Technologies. All rights reserved.',
+              '© ${AppConstants.copyrightYear} ${AppConstants.appSubtitle}. All rights reserved.',
               textAlign: TextAlign.center,
               style: GoogleFonts.lato(
                 fontSize: 11,
