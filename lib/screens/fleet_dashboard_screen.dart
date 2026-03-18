@@ -60,11 +60,11 @@ class FleetDashboardScreen extends ConsumerWidget {
                     attentionCount: summary.attention,
                     criticalCount: summary.critical,
                     onHealthyTap: () =>
-                        context.goToVehicleList(filter: 'HEALTHY'),
+                        context.pushVehicleList(filter: 'HEALTHY'),
                     onAttentionTap: () =>
-                        context.goToVehicleList(filter: 'ATTENTION'),
+                        context.pushVehicleList(filter: 'ATTENTION'),
                     onCriticalTap: () =>
-                        context.goToVehicleList(filter: 'CRITICAL'),
+                        context.pushVehicleList(filter: 'CRITICAL'),
                   ),
                 ),
               ),
@@ -74,7 +74,7 @@ class FleetDashboardScreen extends ConsumerWidget {
                 child: _SectionHeader(
                   title: 'Fleet Overview',
                   actionLabel: 'View All',
-                  onAction: () => context.goToVehicleList(),
+                  onAction: () => context.pushVehicleList(),
                 ),
               ),
 
@@ -209,7 +209,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           trailing: const DrawerBadge('All'),
           onTap: () {
             Navigator.pop(context);
-            context.goToVehicleList();
+            context.pushVehicleList();
           },
         ),
         DrawerItem(
@@ -221,7 +221,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           ),
           onTap: () {
             Navigator.pop(context);
-            context.goToVehicleList(filter: 'HEALTHY');
+            context.pushVehicleList(filter: 'HEALTHY');
           },
         ),
         DrawerItem(
@@ -233,7 +233,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           ),
           onTap: () {
             Navigator.pop(context);
-            context.goToVehicleList(filter: 'ATTENTION');
+            context.pushVehicleList(filter: 'ATTENTION');
           },
         ),
         DrawerItem(
@@ -245,7 +245,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           ),
           onTap: () {
             Navigator.pop(context);
-            context.goToVehicleList(filter: 'CRITICAL');
+            context.pushVehicleList(filter: 'CRITICAL');
           },
         ),
         DrawerItem(

@@ -158,10 +158,19 @@ extension AppNavigation on BuildContext {
   void pushVehicleDetail(String vehicleId) =>
       push(AppRoutes.vehicleDetailPath(vehicleId));
 
-  void pushVehicleList({String filter = 'ALL'}) => push(
+  void pushVehicleList({
+    String filter = 'ALL',
+    String stress = 'ALL',
+    String search = '',
+  }) =>
+      push(
         Uri(
           path: AppRoutes.vehicleList,
-          queryParameters: {'filter': filter},
+          queryParameters: {
+            'filter': filter,
+            'stress': stress,
+            if (search.isNotEmpty) 'search': search,
+          },
         ).toString(),
       );
 }
