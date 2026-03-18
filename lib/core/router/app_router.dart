@@ -1,3 +1,4 @@
+import 'package:ev_fleet_app/features/alerts/presentation/alerts_screen.dart';
 import 'package:ev_fleet_app/features/settings/presentation/settings_screen.dart';
 import 'package:ev_fleet_app/screens/fleet_dashboard_screen.dart';
 import 'package:ev_fleet_app/screens/vehicle_detail_screen.dart';
@@ -59,6 +60,11 @@ final List<RouteBase> _routes = [
     path: '/settings',
     name: 'settings',
     builder: (context, state) => const SettingsScreen(),
+  ),
+  GoRoute(
+    path: '/alerts',
+    name: 'alerts',
+    builder: (context, state) => const AlertsScreen(),
   ),
 
   // ── Vehicle List ──────────────────────────────────────
@@ -149,6 +155,7 @@ extension AppNavigation on BuildContext {
           'search': search,
         },
       );
+  void pushAlerts() => push('/alerts');
 
   void goToVehicleDetail(String vehicleId) =>
       go(AppRoutes.vehicleDetailPath(vehicleId));

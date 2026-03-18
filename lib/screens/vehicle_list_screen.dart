@@ -12,6 +12,7 @@ import 'package:ev_fleet_app/features/fleet/models/vehicle_item_model.dart';
 import 'package:ev_fleet_app/features/fleet/providers/fleet_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class VehicleListScreen extends ConsumerStatefulWidget {
@@ -61,10 +62,11 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
-          // Reset all filters so Dashboard returns to full vehicle list
-          ref.read(statusFilterProvider.notifier).state = 'ALL';
-          ref.read(stressFilterProvider.notifier).state = 'ALL';
-          ref.read(searchQueryProvider.notifier).state = '';
+          Future.microtask(() {
+            ref.read(statusFilterProvider.notifier).state = 'ALL';
+            ref.read(stressFilterProvider.notifier).state = 'ALL';
+            ref.read(searchQueryProvider.notifier).state = '';
+          });
         }
       },
       child: Scaffold(
@@ -130,7 +132,8 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
   ) {
     final count = vehiclesAsync.value?.length ?? 0;
 
-    final title = switch (widget.initialFilter) {
+    final activeFilter = ref.watch(statusFilterProvider);
+    final title = switch (activeFilter) {
       'HEALTHY' => 'Healthy Vehicles',
       'ATTENTION' => 'Needs Attention',
       'CRITICAL' => 'Critical Vehicles',
@@ -188,68 +191,53 @@ class _VehicleListScreenState extends ConsumerState<VehicleListScreen> {
         DrawerItem(
           icon: Icons.dashboard_outlined,
           title: 'Fleet Dashboard',
-          onTap: () {
-            Navigator.pop(context);
-            context.goToDashboard();
-          },
+          onTap: () => context.goToDashboard(),
         ),
         DrawerItem(
           icon: Icons.check_circle_outline,
           title: 'Healthy',
           isSelected: widget.initialFilter == 'HEALTHY',
           trailing: const DrawerBadge('Healthy', color: AppColors.success),
-          onTap: () {
-            Navigator.pop(context);
-            ref.read(statusFilterProvider.notifier).state = 'HEALTHY';
-          },
+          onTap: () =>
+              ref.read(statusFilterProvider.notifier).state = 'HEALTHY',
         ),
         DrawerItem(
           icon: Icons.warning_amber_outlined,
           title: 'Needs Attention',
           isSelected: widget.initialFilter == 'ATTENTION',
           trailing: const DrawerBadge('Attention', color: AppColors.warning),
-          onTap: () {
-            Navigator.pop(context);
-            ref.read(statusFilterProvider.notifier).state = 'ATTENTION';
-          },
+          onTap: () =>
+              ref.read(statusFilterProvider.notifier).state = 'ATTENTION',
         ),
         DrawerItem(
           icon: Icons.error_outline,
           title: 'Critical',
           isSelected: widget.initialFilter == 'CRITICAL',
           trailing: const DrawerBadge('Critical', color: AppColors.error),
-          onTap: () {
-            Navigator.pop(context);
-            ref.read(statusFilterProvider.notifier).state = 'CRITICAL';
-          },
+          onTap: () =>
+              ref.read(statusFilterProvider.notifier).state = 'CRITICAL',
         ),
         DrawerItem(
           icon: Icons.notifications_outlined,
           title: 'Alerts',
           isDividerBefore: true,
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pushAlerts(),
         ),
         DrawerItem(
           icon: Icons.settings_outlined,
           title: 'Settings',
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pushNamed('settings'),
         ),
         DrawerItem(
           icon: Icons.help_outline,
           title: 'Help & Support',
           isDividerBefore: true,
-          onTap: () {
-            Navigator.pop(context);
-            AppDrawerDialogs.showHelp(context);
-          },
+          onTap: () => AppDrawerDialogs.showHelp(context),
         ),
         DrawerItem(
           icon: Icons.info_outline,
           title: 'About',
-          onTap: () {
-            Navigator.pop(context);
-            AppDrawerDialogs.showAbout(context);
-          },
+          onTap: () => AppDrawerDialogs.showAbout(context),
         ),
       ];
 

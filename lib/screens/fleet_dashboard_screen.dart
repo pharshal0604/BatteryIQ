@@ -179,7 +179,7 @@ class FleetDashboardScreen extends ConsumerWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications_outlined),
-          onPressed: () {},
+          onPressed: () => context.pushAlerts(),
           tooltip: 'Alerts',
         ),
         IconButton(
@@ -201,7 +201,7 @@ class FleetDashboardScreen extends ConsumerWidget {
           icon: Icons.dashboard_outlined,
           title: 'Fleet Dashboard',
           isSelected: true,
-          onTap: () => Navigator.pop(context),
+          onTap: () {}, // drawer closes itself, nothing else needed
         ),
         DrawerItem(
           icon: Icons.check_circle_outline,
@@ -210,10 +210,7 @@ class FleetDashboardScreen extends ConsumerWidget {
             '${ref.read(fleetSummaryProvider).value?.healthy ?? 0}',
             color: AppColors.success,
           ),
-          onTap: () {
-            Navigator.pop(context);
-            context.pushVehicleList(filter: 'HEALTHY');
-          },
+          onTap: () => context.pushVehicleList(filter: 'HEALTHY'),
         ),
         DrawerItem(
           icon: Icons.warning_amber_outlined,
@@ -222,10 +219,7 @@ class FleetDashboardScreen extends ConsumerWidget {
             '${ref.read(fleetSummaryProvider).value?.attention ?? 0}',
             color: AppColors.warning,
           ),
-          onTap: () {
-            Navigator.pop(context);
-            context.pushVehicleList(filter: 'ATTENTION');
-          },
+          onTap: () => context.pushVehicleList(filter: 'ATTENTION'),
         ),
         DrawerItem(
           icon: Icons.error_outline,
@@ -234,38 +228,29 @@ class FleetDashboardScreen extends ConsumerWidget {
             '${ref.read(fleetSummaryProvider).value?.critical ?? 0}',
             color: AppColors.error,
           ),
-          onTap: () {
-            Navigator.pop(context);
-            context.pushVehicleList(filter: 'CRITICAL');
-          },
+          onTap: () => context.pushVehicleList(filter: 'CRITICAL'),
         ),
         DrawerItem(
           icon: Icons.notifications_outlined,
           title: 'Alerts',
           isDividerBefore: true,
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pushAlerts(),
         ),
         DrawerItem(
           icon: Icons.settings_outlined,
           title: 'Settings',
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pushNamed('settings'),
         ),
         DrawerItem(
           icon: Icons.help_outline,
           title: 'Help & Support',
           isDividerBefore: true,
-          onTap: () {
-            Navigator.pop(context);
-            AppDrawerDialogs.showHelp(context);
-          },
+          onTap: () => AppDrawerDialogs.showHelp(context),
         ),
         DrawerItem(
           icon: Icons.info_outline,
           title: 'About',
-          onTap: () {
-            Navigator.pop(context);
-            AppDrawerDialogs.showAbout(context);
-          },
+          onTap: () => AppDrawerDialogs.showAbout(context),
         ),
       ];
 }

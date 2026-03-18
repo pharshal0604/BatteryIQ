@@ -89,9 +89,9 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           _DrawerHeader(
-            appName:        appName,
-            appSubtitle:    appSubtitle,
-            appIcon:        appIcon,
+            appName: appName,
+            appSubtitle: appSubtitle,
+            appIcon: appIcon,
             roleBadgeLabel: roleBadgeLabel,
           ),
           Expanded(
@@ -141,7 +141,7 @@ class _DrawerHeader extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
-          end:   Alignment.bottomRight,
+          end: Alignment.bottomRight,
           colors: [
             AppColors.brandGreen,
             AppColors.brandGreen.withValues(alpha: 0.75),
@@ -153,10 +153,10 @@ class _DrawerHeader extends StatelessWidget {
         children: [
           // App Icon
           Container(
-            width:  64,
+            width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color:        Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(appIcon, size: 36, color: Colors.white),
@@ -167,9 +167,9 @@ class _DrawerHeader extends StatelessWidget {
           Text(
             appName,
             style: GoogleFonts.lato(
-              fontSize:   20,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
-              color:      Colors.white,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 4),
@@ -179,7 +179,7 @@ class _DrawerHeader extends StatelessWidget {
             appSubtitle,
             style: GoogleFonts.lato(
               fontSize: 13,
-              color:    Colors.white.withValues(alpha: 0.85),
+              color: Colors.white.withValues(alpha: 0.85),
             ),
           ),
 
@@ -187,28 +187,28 @@ class _DrawerHeader extends StatelessWidget {
           if (roleBadgeLabel != null) ...[
             const SizedBox(height: 14),
             Material(
-              color:        Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
-                  vertical:   7,
+                  vertical: 7,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
                       Icons.badge_outlined,
-                      size:  15,
+                      size: 15,
                       color: Colors.white,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       roleBadgeLabel!,
                       style: GoogleFonts.lato(
-                        fontSize:   12,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color:      Colors.white,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -251,16 +251,20 @@ class _DrawerTile extends StatelessWidget {
         title: Text(
           item.title,
           style: GoogleFonts.lato(
-            fontSize:   15,
+            fontSize: 15,
             fontWeight: item.isSelected ? FontWeight.w600 : FontWeight.w500,
             color: item.isSelected
                 ? AppColors.brandGreen
                 : (item.textColor ?? Theme.of(context).colorScheme.onSurface),
           ),
         ),
-        trailing:       item.trailing,
-        onTap:          item.onTap,
-        shape:          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        trailing: item.trailing,
+        onTap: () {
+          // Close drawer first using root navigator, then fire the item's onTap
+          Navigator.of(context).pop();
+          item.onTap();
+        },
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
         minVerticalPadding: 8,
       ),
@@ -289,7 +293,7 @@ class _DrawerFooter extends StatelessWidget {
         children: [
           const Icon(
             Icons.verified_outlined,
-            size:  15,
+            size: 15,
             color: AppColors.brandGreen,
           ),
           const SizedBox(width: 8),
@@ -297,7 +301,7 @@ class _DrawerFooter extends StatelessWidget {
             'EV Fleet Health  •  $versionLabel',
             style: GoogleFonts.lato(
               fontSize: 12,
-              color:    Theme.of(context).textTheme.bodySmall?.color,
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
           ),
         ],
@@ -320,25 +324,25 @@ class AppDrawerDialogs {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: _dialogTitle(
           context,
-          icon:  Icons.help_outline,
+          icon: Icons.help_outline,
           label: 'Help & Support',
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _helpItem(context,
-                icon:     Icons.email_outlined,
-                title:    'Email Support',
+                icon: Icons.email_outlined,
+                title: 'Email Support',
                 subtitle: 'fleet@endurance.in'),
             const SizedBox(height: 12),
             _helpItem(context,
-                icon:     Icons.chat_outlined,
-                title:    'Live Chat',
+                icon: Icons.chat_outlined,
+                title: 'Live Chat',
                 subtitle: 'Available 9AM – 6PM IST'),
             const SizedBox(height: 12),
             _helpItem(context,
-                icon:     Icons.book_outlined,
-                title:    'Documentation',
+                icon: Icons.book_outlined,
+                title: 'Documentation',
                 subtitle: 'docs.endurance-fleet.in'),
           ],
         ),
@@ -354,22 +358,22 @@ class AppDrawerDialogs {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: _dialogTitle(
           context,
-          icon:  Icons.info_outline,
+          icon: Icons.info_outline,
           label: 'About',
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width:  80,
+              width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color:        AppColors.brandGreen.withValues(alpha: 0.1),
+                color: AppColors.brandGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
                 Icons.electric_bolt_rounded,
-                size:  40,
+                size: 40,
                 color: AppColors.brandGreen,
               ),
             ),
@@ -377,9 +381,9 @@ class AppDrawerDialogs {
             Text(
               'EV Fleet Health',
               style: GoogleFonts.lato(
-                fontSize:   22,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color:      Theme.of(context).colorScheme.onSurface,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
@@ -387,7 +391,7 @@ class AppDrawerDialogs {
               'Version 1.0.0',
               style: GoogleFonts.lato(
                 fontSize: 13,
-                color:    Theme.of(context).textTheme.bodyMedium?.color,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
               ),
             ),
             const SizedBox(height: 16),
@@ -396,8 +400,8 @@ class AppDrawerDialogs {
               textAlign: TextAlign.center,
               style: GoogleFonts.lato(
                 fontSize: 13,
-                height:   1.6,
-                color:    Theme.of(context).textTheme.bodyMedium?.color,
+                height: 1.6,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
               ),
             ),
             const SizedBox(height: 16),
@@ -408,7 +412,7 @@ class AppDrawerDialogs {
               textAlign: TextAlign.center,
               style: GoogleFonts.lato(
                 fontSize: 11,
-                color:    Theme.of(context).textTheme.bodySmall?.color,
+                color: Theme.of(context).textTheme.bodySmall?.color,
               ),
             ),
           ],
@@ -430,7 +434,7 @@ class AppDrawerDialogs {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color:        AppColors.brandGreen.withValues(alpha: 0.1),
+            color: AppColors.brandGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: AppColors.brandGreen),
@@ -440,7 +444,7 @@ class AppDrawerDialogs {
           label,
           style: GoogleFonts.lato(
             fontWeight: FontWeight.bold,
-            color:      Theme.of(context).colorScheme.onSurface,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],
@@ -465,14 +469,14 @@ class AppDrawerDialogs {
                 title,
                 style: GoogleFonts.lato(
                   fontWeight: FontWeight.w600,
-                  color:      Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               Text(
                 subtitle,
                 style: GoogleFonts.lato(
                   fontSize: 12,
-                  color:    Theme.of(context).textTheme.bodySmall?.color,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ],
@@ -488,7 +492,7 @@ class AppDrawerDialogs {
       child: Text(
         'Close',
         style: GoogleFonts.lato(
-          color:      AppColors.brandGreen,
+          color: AppColors.brandGreen,
           fontWeight: FontWeight.w600,
         ),
       ),
